@@ -137,7 +137,15 @@ git push -u origin master
 
 **…or push an existing repository from the command line**
 ```
-git remote add origin git@github.com:webdev2754/cauldron_overflow.git
+
+git remote add origin https://github.com/webdev2754/cauldron_overflow.git
+git remote add origin git@github.com:webdev2754/cauldron_overflow.git (works only with private/public key pair)
 git branch -M master
 git push -u origin master
+
+```
+**Sets the upstream branch for the current branch (master) to the remote branch named master on the origin remote**
+```
+git branch --set-upstream-to=origin/master master
+
 ```
