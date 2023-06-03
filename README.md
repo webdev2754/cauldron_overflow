@@ -115,3 +115,29 @@ And as always, thanks so much for your support and letting
 us do what we love!
 
 <3 Your friends at SymfonyCasts
+
+# GIT SETUP
+
+**Quick setup — if you’ve done this kind of thing before**
+
+```
+http  git clone https://github.com/webdev2754/cauldron_overflow.git
+ssh git clone git@github.com:webdev2754/cauldron_overflow.git
+```
+**…or create a new repository on the command line**
+```
+echo "# cauldron_overflow" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M master
+git remote add origin https://github.com/webdev2754/cauldron_overflow.git
+git push -u origin master
+```
+
+**…or push an existing repository from the command line**
+```
+git remote add origin git@github.com:webdev2754/cauldron_overflow.git
+git branch -M master
+git push -u origin master
+```
