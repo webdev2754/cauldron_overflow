@@ -147,5 +147,45 @@ git push -u origin master
 **Sets the upstream branch for the current branch (master) to the remote branch named master on the origin remote**
 ```
 git branch --set-upstream-to=origin/master master
+or simply
+git push --set-upstream origin master
 
+```
+
+**create git-credential file**
+```
+echo "protocol=https
+host=github.com
+username=<your_username>
+password=<your_access_token>" >> ~/.my-git-credentials
+
+```
+**example, nano ~/.my-git-credentials** 
+```
+protocol=https
+host=github.com
+username=webdev2754
+password=access_token
+```
+
+**set git credential mode to 'store'**
+```
+git config --global credential.helper store
+```
+
+**check credential**
+```
+cat ~/.git-credentials
+https://webdev2754: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@github.com
+
+```
+**unset git-credential**
+```
+git config --unset --credential.helper
+
+```
+
+**test your access-token**
+```
+git push https://my_access_token@github.com/webdev2754/cauldron_overflow.git
 ```
