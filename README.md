@@ -176,7 +176,7 @@ git config --global credential.helper store
 **check credential**
 ```
 cat ~/.git-credentials
-https://webdev2754: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@github.com
+https://webdev2754:my_access_token@github.com
 
 ```
 **unset git-credential**
