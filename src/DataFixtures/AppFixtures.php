@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Answer;
 use App\Entity\Question;
+use App\Factory\AnswerFactory;
 use App\Factory\QuestionFactory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -19,7 +20,8 @@ class AppFixtures extends Fixture
             ->many(5)
             ->create();
 
-        $answer = new Answer();
+        //classic way without foundry
+        /*$answer = new Answer();
         $answer->setContent(
             'This question is the best? I wish... I knew the answer.'
         );
@@ -32,7 +34,18 @@ class AppFixtures extends Fixture
 
         $answer->setQuestion($question);
         $manager->persist($answer);
-        $manager->persist($question);
+        $manager->persist($question);*/
+
+        //The QuestionFactory::random() grabs a random Question from the database.it is now important that we create the questions first and then the answers after.
+        //If you want a different value for question_id per Answer, you need to pass a callback function to the second argument instead of an array.
+        // That function will then return the array of data to use. Foundry will execute the callback once for each Answer: so 100 times in total.
+       /* AnswerFactory::createMany(100, function () {
+            return [
+                'question' => QuestionFactory::random(),
+            ];
+        }); */
+
+        AnswerFactory::createMany(100);
 
 
         $manager->flush();
