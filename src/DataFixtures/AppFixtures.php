@@ -13,10 +13,10 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager)
     {
-        QuestionFactory::createMany(20);
+        $questions = QuestionFactory::createMany(20);
 
-        QuestionFactory::new()
-            ->unpublished()
+        QuestionFactory::new() //get a second instance of question-factory
+            ->unpublished() //->unpublished() to change the default askedAt data.  create a new factory, make everything unpublished and create 5.
             ->many(5)
             ->create();
 
@@ -39,13 +39,18 @@ class AppFixtures extends Fixture
         //The QuestionFactory::random() grabs a random Question from the database.it is now important that we create the questions first and then the answers after.
         //If you want a different value for question_id per Answer, you need to pass a callback function to the second argument instead of an array.
         // That function will then return the array of data to use. Foundry will execute the callback once for each Answer: so 100 times in total.
-       /* AnswerFactory::createMany(100, function () {
-            return [
-                'question' => QuestionFactory::random(),
-            ];
-        }); */
+        /* AnswerFactory::createMany(100, function () {
+             return [
+                 'question' => QuestionFactory::random(),
+             ];
+         }); */
 
-        AnswerFactory::createMany(100);
+        //randomly grab only one of the 20 published questions and assign them to answers.
+        AnswerFactory::createMany(100, function() use ($questions) {
+            return [
+                'question' => $questions[array_rand($questions)]
+            ];
+        });
 
 
         $manager->flush();

@@ -35,9 +35,16 @@ final class QuestionFactory extends ModelFactory
         // TODO inject services if required (https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services)
     }
 
+    //Foundry "State"
+    //this is a self written method
+    //Let's try one last thing with Foundry. To have nice testing data, we need a mixture of published and unpublished questions.
+    // We're currently accomplishing that by randomly setting some askedAt properties to null.
+    // Instead let's create two different sets of fixtures: exactly 20 that are published and exactly 5 that are unpublished.
     public function unpublished(): self
     {
-        return $this->addState(['askedAt' => null]);
+        //Here's the deal: when you call addState(), it changes the default data inside this instance of the factory.
+        // Oh, and the return statement here just helps to return self... which allows method chaining.
+        return $this->addState(['askedAt' => null]); //askedAt is not set => unpublished
     }
 
     protected function getDefaults(): array
@@ -60,6 +67,25 @@ final class QuestionFactory extends ModelFactory
             // ->afterInstantiate(function(Question $question) {})
         ;
     }
+
+    /*Doing Things Before Saving
+    If you click into one of the questions, you can see that the slug is unique... but was generated in a way that is
+    completely unrelated to the question's name.
+    That's "maybe" ok... but it's not realistic. To fix this:
+     *  Foundry comes with a nice "hook" system where we can do actions before or after each item is saved.
+     Inside QuestionFactory, the initialize() method is where you can add these hooks.
+     * protected function initialize(): self
+    {
+        // see https://github.com/zenstruck/foundry#initialization
+        return $this
+            ->afterInstantiate(function(Question $question) {
+                if (!$question->getSlug()) {
+                    $slugger = new AsciiSlugger();
+                    $question->setSlug($slugger->slug($question->getName()));
+                }
+            })
+            ;
+    }*/
 
     protected static function getClass(): string
     {
