@@ -2,6 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Answer;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,7 +16,7 @@ class AnswerController extends AbstractController
     /**
      * @Route("/answers/{id}/vote", methods="POST", name="answer_vote")
      */
-    public function answerVote($id, LoggerInterface $logger, Request $request)
+    public function answerVote(Answer $answer, LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager)
     {
         $data = json_decode($request->getContent(), true);
         $direction = $data['direction'] ?? 'up';
@@ -22,12 +26,21 @@ class AnswerController extends AbstractController
         // use real logic here to save this to the database
         if ($direction === 'up') {
             $logger->info('Voting up!');
-            $currentVoteCount = rand(7, 100);
+//            $currentVoteCount = rand(7, 100);
+            $answer->setVotes($answer->getVotes() + 1);
         } else {
             $logger->info('Voting down!');
-            $currentVoteCount = rand(0, 5);
+//            $currentVoteCount = rand(0, 5);
+            $answer->setVotes($answer->getVotes() -1);
         }
 
-        return $this->json(['votes' => $currentVoteCount]);
+        try {
+            $entityManager->flush();
+        } catch (OptimisticLockException $e) {
+        } catch (ORMException $e) {
+            $logger->error('Could not save!');
+        }
+
+        return $this->json(['votes' => $answer->getVotes()]);
     }
 }

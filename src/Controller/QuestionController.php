@@ -58,18 +58,14 @@ class QuestionController extends AbstractController
         //also possible:
         $answers = $question->getAnswers(); //Attention: lazy-loading: at this point answers of question-entity are not loaded by doctrine. You get only a collection-object (see dd-output)
 //        dd($answers);
-        foreach ($answers as $answer) { //only when u use the data, doctrine will query for the answers (e.g. when u loop over it for instance) => this is called lazy-loading
+       /* foreach ($answers as $answer) { //only when u use the data, doctrine will query for the answers (e.g. when u loop over it for instance) => this is called lazy-loading
             dump($answer); //no die-statement. Dump will show on the web-debug-toolbar
-        }
-        $answers = [
-            'Make sure your cat is sitting `purrrfectly` still 🤣',
-            'Honestly, I like furry shoes better than MY cat',
-            'Maybe... try saying the spell backwards?',
-        ];
+        }*/
+
 
         return $this->render('question/show.html.twig', [
             'question' => $question,
-            'answers' => $answers,
+//            'answers' => $answers,
         ]);
     }
 
