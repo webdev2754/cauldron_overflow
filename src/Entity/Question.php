@@ -49,8 +49,11 @@ class Question
      */
     private $votes = 0;
 
+    //extra lazy option means: query only for needed answer-data (e.g. count answers for specific question, triggered in template, see {{ question.answers|length }}), don't fetch all answers each time
+    //extra lazy has also disadvantages, be aware of additional (redundant queries)
     /**
-     * @ORM\OneToMany(targetEntity=Answer::class, mappedBy="question")
+     * @ORM\OneToMany(targetEntity=Answer::class, mappedBy="question", fetch="EXTRA_LAZY")
+     * @ORM\OrderBy({"createdAt" = "DESC"})
      */
     private $answers;
 
