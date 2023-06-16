@@ -3,6 +3,7 @@
 namespace App\Factory;
 
 use App\Entity\Answer;
+use App\Enum\AnswerStatus;
 use App\Repository\AnswerRepository;
 use Zenstruck\Foundry\RepositoryProxy;
 use Zenstruck\Foundry\ModelFactory;
@@ -45,6 +46,8 @@ final class AnswerFactory extends ModelFactory
             'username'  => self::faker()->userName(),
             'createdAt' => self::faker()->dateTimeBetween('-1 year'),
             'votes'     => rand(-20, 50),
+            'status' => AnswerStatus::APPROVED,
+
             //            'question' => QuestionFactory::random(), //This works because the getdefault-Method will be called 100 times. Each time a new question-id as fk will be generated
             //The problem is subtle (see DataFixtures/AppFixtures.php:49 which overwrites created questions (normally the number should be 25)) ... but maybe you spotted it! We're creating 100 answers... and the getDefaults() method is called for every one.
             // That's.... good! But the moment that this question line is executed, it creates a new unpublished Question and saves it to the database.
@@ -66,6 +69,14 @@ final class AnswerFactory extends ModelFactory
             'question' => QuestionFactory::new()->unpublished(),
 
         ];
+    }
+
+    public function needsApproval():self
+    {
+        return $this->addState([
+            'status' => AnswerStatus::NEEDS_APPROVAL,
+        ]);
+
     }
 
     protected function initialize(): self

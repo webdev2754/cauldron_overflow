@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\AnswerStatus;
 use App\Repository\AnswerRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
@@ -12,6 +13,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 class Answer
 {
     use TimestampableEntity;
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -40,6 +42,15 @@ class Answer
      */
     private $question;
 
+    /**
+     * @ORM\Column(type="string", length=15)
+     */
+    private string|AnswerStatus $status = AnswerStatus::NEEDS_APPROVAL;
+
+    public function __construct()
+    {
+        $this->status = $this->status->value;
+    }
     public function getId(): ?int
     {
         return $this->id;
@@ -91,5 +102,22 @@ class Answer
         $this->question = $question;
 
         return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(AnswerStatus $status): self
+    {
+        $this->status = $status->value;
+
+        return $this;
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->status === AnswerStatus::APPROVED->value;
     }
 }

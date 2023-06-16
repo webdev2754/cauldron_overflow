@@ -50,6 +50,7 @@ class QuestionController extends AbstractController
      */
     public function show(Question $question, AnswerRepository $answerRepository)
     {
+
         if ($this->isDebug) {
             $this->logger->info('We are in debug mode!');
         }

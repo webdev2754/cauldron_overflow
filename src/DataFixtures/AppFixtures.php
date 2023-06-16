@@ -65,6 +65,13 @@ class AppFixtures extends Fixture
         $manager->persist($answer1);
         $manager->persist($answer2);*/
 
+        //So this will create 20 new, "needs approval" answers that are set to a random published Question
+        AnswerFactory::new(function () use ($questions) {
+            return [
+                'question' => $questions[array_rand($questions)]
+            ];
+        } )->needsApproval()->many(20)->create();
+
 
         $manager->flush();
     }
