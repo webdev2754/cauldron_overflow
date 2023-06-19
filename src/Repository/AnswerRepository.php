@@ -3,7 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Answer;
+use App\Enum\AnswerStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -17,6 +20,32 @@ class AnswerRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Answer::class);
+    }
+
+    //You need to make this function static, otherwise you cannot inject the Criteria-Object into the entity
+    public static function createApprovedCriteria(): Criteria
+    {
+        return Criteria::create()
+            ->andWhere(
+                Criteria::expr()->eq('status', AnswerStatus::APPROVED->value)
+            );
+    }
+
+    /**
+     *
+     * @return Answer[]
+     * @throws QueryException
+     */
+    public function findAllApproved(int $max = 10): array
+    {
+        return $this->createQueryBuilder('answer')
+            //alternative way without reusing criteria
+//            ->andWhere('answer.status = :status')
+//            ->setParameter('status', AnswerStatus::APPROVED->value)
+            ->addCriteria(self::createApprovedCriteria()) //reusing criteria oobject
+            ->setMaxResults($max)
+            ->getQuery()
+            ->getResult();
     }
 
     // /**
