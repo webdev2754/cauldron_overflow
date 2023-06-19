@@ -51,6 +51,7 @@ class Answer
     {
         $this->status = $this->status->value;
     }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -95,6 +96,15 @@ class Answer
     public function getQuestion(): ?Question
     {
         return $this->question;
+    }
+
+    public function getQuestionText(): string
+    {
+        if (!$this->getQuestion()) {
+            return '';
+        }
+
+        return (string)$this->getQuestion()->getQuestion();
     }
 
     public function setQuestion(?Question $question): self
