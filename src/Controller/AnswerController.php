@@ -3,12 +3,14 @@
 namespace App\Controller;
 
 use App\Entity\Answer;
+use App\Repository\AnswerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class AnswerController extends AbstractController
@@ -16,8 +18,12 @@ class AnswerController extends AbstractController
     /**
      * @Route("/answers/{id}/vote", methods="POST", name="answer_vote")
      */
-    public function answerVote(Answer $answer, LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager)
-    {
+    public function answerVote(
+        Answer $answer,
+        LoggerInterface $logger,
+        Request $request,
+        EntityManagerInterface $entityManager
+    ): Response {
         $data = json_decode($request->getContent(), true);
         $direction = $data['direction'] ?? 'up';
 
@@ -31,7 +37,7 @@ class AnswerController extends AbstractController
         } else {
             $logger->info('Voting down!');
 //            $currentVoteCount = rand(0, 5);
-            $answer->setVotes($answer->getVotes() -1);
+            $answer->setVotes($answer->getVotes() - 1);
         }
 
         try {
@@ -42,5 +48,15 @@ class AnswerController extends AbstractController
         }
 
         return $this->json(['votes' => $answer->getVotes()]);
+    }
+
+    #[Route('/answers/popular', name: "app_popular_answers")]
+    public function popularAnswers(AnswerRepository $answerRepository): Response
+    {
+        $answers = $answerRepository->findMostPopular();
+
+        return $this->render('answer/popular_answers.html.twig', [
+            'answers' => $answers,
+        ]);
     }
 }

@@ -42,8 +42,23 @@ class AnswerRepository extends ServiceEntityRepository
             //alternative way without reusing criteria
 //            ->andWhere('answer.status = :status')
 //            ->setParameter('status', AnswerStatus::APPROVED->value)
-            ->addCriteria(self::createApprovedCriteria()) //reusing criteria oobject
+            ->addCriteria(
+                self::createApprovedCriteria()
+            ) //reusing criteria oobject
             ->setMaxResults($max)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return Answer[]
+     */
+    public function findMostPopular(): array
+    {
+        return $this->createQueryBuilder('answer')
+            ->addCriteria(self::createApprovedCriteria())
+            ->orderBy('answer.votes', 'DESC')
+            ->setMaxResults(10)
             ->getQuery()
             ->getResult();
     }
