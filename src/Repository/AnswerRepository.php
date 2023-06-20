@@ -58,6 +58,8 @@ class AnswerRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('answer')
             ->addCriteria(self::createApprovedCriteria())
             ->orderBy('answer.votes', 'DESC')
+            ->innerJoin('answer.question', 'question')
+            ->addSelect('question') //although of the selected question-data, the repo-method will still give a result-array with answer-objects, but each answer-object will be preloaded with question-objects //select always the entity (grab everything from question), not something like question.slug ... (this is not needed)
             ->setMaxResults(10)
             ->getQuery()
             ->getResult();
