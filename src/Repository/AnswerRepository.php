@@ -53,13 +53,27 @@ class AnswerRepository extends ServiceEntityRepository
     /**
      * @return Answer[]
      */
-    public function findMostPopular(): array
+    public function findMostPopular(string $search = null): array
     {
-        return $this->createQueryBuilder('answer')
+        $queryBuilder = $this->createQueryBuilder('answer')
             ->addCriteria(self::createApprovedCriteria())
             ->orderBy('answer.votes', 'DESC')
             ->innerJoin('answer.question', 'question')
-            ->addSelect('question') //although of the selected question-data, the repo-method will still give a result-array with answer-objects, but each answer-object will be preloaded with question-objects //select always the entity (grab everything from question), not something like question.slug ... (this is not needed)
+            //example with additional on-criterias
+//            ->innerJoin('answer.question', 'question', Join::WITH, 'question.status = :status')
+//            ->addSelect('question')
+//            ->setParameter('status', 'published')
+            ->addSelect(
+                'question'
+            ); //although of the selected question-data, the repo-method will still give a result-array with answer-objects, but each answer-object will be preloaded with question-objects //select always the entity (grab everything from question), not something like question.slug ... (this is not needed)
+
+        if ($search) {
+            $queryBuilder->andWhere('answer.content LIKE :searchTerm OR question.question LIKE :searchTerm') //first question=Question-Object (see alias above) Second-Question=question-property
+//                ->orWhere() //not good alternativ
+                ->setParameter('searchTerm', "%$search%");
+        }
+
+        return $queryBuilder
             ->setMaxResults(10)
             ->getQuery()
             ->getResult();
