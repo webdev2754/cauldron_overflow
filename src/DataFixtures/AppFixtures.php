@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Answer;
 use App\Entity\Question;
+use App\Entity\Tag;
 use App\Factory\AnswerFactory;
 use App\Factory\QuestionFactory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -72,7 +73,29 @@ class AppFixtures extends Fixture
             ];
         } )->needsApproval()->many(20)->create();
 
+        //Fix for:   App\Entity\Tag::addQuestion(): Argument #1 ($question) must be of type App\Entity\Question, Zenstruck\Foundry\Proxy given, called in /var/www/project/src/
+        //  DataFixtures/AppFixtures.php on line 87  ->object() -> now question is a pure question-object (no foundry-proxy)
+        $question = QuestionFactory::createOne()->object();
+        $tag1 = new Tag();
+        $tag1->setName('dinosaurs');
+        $tag2 = new Tag();
+        $tag2->setName('monster trucks');
+        $question->addTag($tag1); //you can only set in relation via the owning side
+        $question->addTag($tag2); //you can only set in relation via the owning side
+
+        //experiment, that setting objects in relation via inversed-side does not work
+        //you can only set in relation via the owning side
+        //this will normally not work, but thanks to smart Entity-Logic it works: $question->addTag($this) in tag->addQuestion-method, the owning-side (Question) will be used again to ensure persisting the  correct manytomany-relation
+        //if u comment out $question->addTag($this) it will not work
+//        $tag1->addQuestion($question);
+//        $tag2->addQuestion($question);
+
+        $manager->persist($tag1);
+        $manager->persist($tag2);
+
 
         $manager->flush();
+
+//        $question->removeTag($tag1);
     }
 }
