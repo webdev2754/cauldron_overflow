@@ -18,14 +18,25 @@ class AppFixtures extends Fixture
     {
         TagFactory::createMany(100);
 
-        QuestionTagFactory::createMany(10);
-        return;
-
-        $questions = QuestionFactory::createMany(20, function () {
+        $questions = QuestionFactory::createMany(20, function() {
             return [
-                'tags' => TagFactory::randomRange(0, 5),
+                'questionTags' => QuestionTagFactory::new(function() {
+                    return [
+                        'tag' => TagFactory::random(),
+                    ];
+                })->many(1, 5),
             ];
         });
+
+        //alternative way, simpler but relations between question_tags and tags and question dont fit 100%
+//        $questions = QuestionFactory::createMany(20);
+
+//        QuestionTagFactory::createMany(100, function() {
+//            return [
+//                'tag' => TagFactory::random(),
+//                'question' => QuestionFactory::random(),
+//            ];
+//        });
 
         QuestionFactory::new() //get a second instance of question-factory
         ->unpublished(
