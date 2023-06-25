@@ -74,7 +74,7 @@ class Question
     {
         $this->answers = new ArrayCollection();
 //        $this->tags = new ArrayCollection();
-$this->questionTags = new ArrayCollection();
+        $this->questionTags = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -137,7 +137,7 @@ $this->questionTags = new ArrayCollection();
 
     public function getVotesString(): string
     {
-        $prefix = $this->getVotes() >=0 ? '+' : '-';
+        $prefix = $this->getVotes() >= 0 ? '+' : '-';
 
         return sprintf('%s %d', $prefix, abs($this->getVotes()));
     }
@@ -172,16 +172,18 @@ $this->questionTags = new ArrayCollection();
     }
 
     //not optimal way for querying all answers and filtering only approved data
-   /* public function getApprovedAnswers():Collection
-    {
-        return $this->answers->filter(function (Answer $answer) {
-            return $answer->isApproved();
-        });
-    }*/
+    /* public function getApprovedAnswers():Collection
+     {
+         return $this->answers->filter(function (Answer $answer) {
+             return $answer->isApproved();
+         });
+     }*/
 
     public function getApprovedAnswers(): Collection
     {
-        return $this->answers->matching(AnswerRepository::createApprovedCriteria());
+        return $this->answers->matching(
+            AnswerRepository::createApprovedCriteria()
+        );
     }
 
     public function addAnswer(Answer $answer): self
@@ -223,40 +225,40 @@ $this->questionTags = new ArrayCollection();
          return $this;
      }*/
 
-  /*  public function removeTag(Tag $tag): self
+    /*  public function removeTag(Tag $tag): self
+      {
+          $this->tags->removeElement($tag);
+
+          return $this;
+      }*/
+
+    /**
+     * @return Collection|QuestionTag[]
+     */
+    public function getQuestionTags(): Collection
     {
-        $this->tags->removeElement($tag);
+        return $this->questionTags;
+    }
+
+    public function addQuestionTag(QuestionTag $questionTag): self
+    {
+        if (!$this->questionTags->contains($questionTag)) {
+            $this->questionTags[] = $questionTag;
+            $questionTag->setQuestion($this);
+        }
 
         return $this;
-    }*/
+    }
 
-  /**
-   * @return Collection|QuestionTag[]
-   */
-  public function getQuestionTags(): Collection
-  {
-      return $this->questionTags;
-  }
+    public function removeQuestionTag(QuestionTag $questionTag): self
+    {
+        if ($this->questionTags->removeElement($questionTag)) {
+            // set the owning side to null (unless already changed)
+            if ($questionTag->getQuestion() === $this) {
+                $questionTag->setQuestion(null);
+            }
+        }
 
-  public function addQuestionTag(QuestionTag $questionTag): self
-  {
-      if (!$this->questionTags->contains($questionTag)) {
-          $this->questionTags[] = $questionTag;
-          $questionTag->setQuestion($this);
-      }
-
-      return $this;
-  }
-
-  public function removeQuestionTag(QuestionTag $questionTag): self
-  {
-      if ($this->questionTags->removeElement($questionTag)) {
-          // set the owning side to null (unless already changed)
-          if ($questionTag->getQuestion() === $this) {
-              $questionTag->setQuestion(null);
-          }
-      }
-
-      return $this;
-  }
+        return $this;
+    }
 }

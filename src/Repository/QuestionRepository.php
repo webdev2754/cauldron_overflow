@@ -20,10 +20,10 @@ class QuestionRepository extends ServiceEntityRepository
         parent::__construct($registry, Question::class);
     }
 
-     /**
-      * @return Question[] Returns an array of Question objects
-      */
-    public function findAllAskedOrderedByNewest()
+    /**
+     * @return Question[] Returns an array of Question objects
+     */
+    /*public function findAllAskedOrderedByNewest()
     {
         return $this->addIsAskedQueryBuilder()
             ->orderBy('q.askedAt', 'DESC')
@@ -38,21 +38,33 @@ class QuestionRepository extends ServiceEntityRepository
              * So... yup! Joining across a ManyToMany relationship is no different than joining across a ManyToOne relationship:
              * you reference the relation property (q.tags) and Doctrine does the heavy lifting.
              */
-            ->leftJoin('q.tags', 'tag')
-            ->addSelect('tag')
+//            ->leftJoin('q.tags', 'tag')
+//            ->addSelect('tag')
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
+    //Joining with the real many-to-many table(entity)
+    public function findAllAskedOrderedByNewest()
+    {
+        return $this->addIsAskedQueryBuilder()
+            ->orderBy('q.askedAt', 'DESC')
+            ->leftJoin('q.questionTags', 'question_tag') // alias question_tag will automatically the joined table question_tag because the property q.questionTags references the real table question_tag by foreign key
+            ->innerJoin('question_tag.tag', 'tag')
+            ->addSelect(['question_tag', 'tag'])
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
 
-    private function addIsAskedQueryBuilder(QueryBuilder $qb = null): QueryBuilder
-    {
+    private function addIsAskedQueryBuilder(QueryBuilder $qb = null
+    ): QueryBuilder {
         return $this->getOrCreateQueryBuilder($qb)
             ->andWhere('q.askedAt IS NOT NULL');
     }
 
-    private function getOrCreateQueryBuilder(QueryBuilder $qb = null): QueryBuilder
-    {
+    private function getOrCreateQueryBuilder(QueryBuilder $qb = null
+    ): QueryBuilder {
         return $qb ?: $this->createQueryBuilder('q');
     }
 
