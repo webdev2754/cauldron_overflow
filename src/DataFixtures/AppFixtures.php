@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Answer;
 use App\Entity\Question;
+use App\Entity\QuestionTag;
 use App\Entity\Tag;
 use App\Factory\AnswerFactory;
 use App\Factory\QuestionFactory;
@@ -16,6 +17,38 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager)
     {
+
+
+
+//        example for creating a new data-record for a question with tags. Record is saved via the questionTag-Entity. Attention the question-Tag-Entity needs the declaration cascade={"persist"})
+
+       /* $question = new Question();
+        $question->setName('How to save a record in Doctrine?');
+        $question->setQuestion('How to save a record in Doctrine?');
+
+        $tag1 = new Tag();
+        $tag1->setName('Doctrine');
+
+        $tag2 = new Tag();
+        $tag2->setName('ORM');
+
+        $questionTag1 = new QuestionTag();
+        $questionTag1->setQuestion($question);
+        $questionTag1->setTag($tag1);
+
+        $questionTag2 = new QuestionTag();
+        $questionTag2->setQuestion($question);
+        $questionTag2->setTag($tag2);
+
+        $manager->persist($questionTag1);
+        $manager->persist($questionTag2);
+
+        $manager->flush();
+
+        return;*/
+
+
+
         TagFactory::createMany(100);
 
         $questions = QuestionFactory::createMany(20, function() {

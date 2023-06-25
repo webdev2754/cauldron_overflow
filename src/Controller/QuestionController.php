@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Question;
+use App\Entity\QuestionTag;
+use App\Entity\Tag;
 use App\Repository\AnswerRepository;
 use App\Repository\QuestionRepository;
 use App\Service\MarkdownHelper;
@@ -28,7 +30,7 @@ class QuestionController extends AbstractController
     /**
      * @Route("/", name="app_homepage")
      */
-    public function homepage(QuestionRepository $repository)
+    public function homepage(QuestionRepository $repository, EntityManagerInterface $manager)
     {
         $questions = $repository->findAllAskedOrderedByNewest();
 
